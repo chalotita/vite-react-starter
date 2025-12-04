@@ -105,20 +105,22 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b border-border bg-card">
+      <header className="border-b border-border bg-gradient-to-r from-primary/10 via-accent to-secondary">
         <div className="container mx-auto flex items-center gap-3 px-4 py-4">
-          <Briefcase className="h-6 w-6 text-primary" />
-          <h1 className="text-xl font-bold text-card-foreground">CRM Dashboard</h1>
+          <div className="rounded-lg bg-primary p-2">
+            <Briefcase className="h-5 w-5 text-primary-foreground" />
+          </div>
+          <h1 className="text-xl font-bold text-foreground">CRM Dashboard</h1>
         </div>
       </header>
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-6">
-        <div className="grid gap-6 lg:grid-cols-3">
+        <div className="flex flex-col gap-6">
           {/* Contacts Table */}
-          <div className="lg:col-span-2">
+          <div>
             {contactsLoading ? (
-              <div className="flex h-64 items-center justify-center rounded-lg border border-border bg-card">
+              <div className="flex h-64 items-center justify-center rounded-lg border border-border bg-card shadow-sm">
                 <p className="text-muted-foreground">Loading contacts...</p>
               </div>
             ) : (
@@ -133,7 +135,7 @@ const Index = () => {
           </div>
 
           {/* Contact Detail Panel */}
-          <div className="lg:col-span-1">
+          <div>
             {selectedContact ? (
               <ContactDetail
                 contact={selectedContact}
@@ -149,7 +151,7 @@ const Index = () => {
                 }}
               />
             ) : (
-              <div className="flex h-64 items-center justify-center rounded-lg border border-border bg-card">
+              <div className="flex h-32 items-center justify-center rounded-lg border border-border bg-card shadow-sm">
                 <p className="text-muted-foreground">Select a contact to view details</p>
               </div>
             )}
