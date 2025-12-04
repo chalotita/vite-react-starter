@@ -8,7 +8,8 @@ export const api = {
     const response = await fetch(`${SERVER_URL}/api/contacts`);
     if (!response.ok) throw new Error('Failed to fetch contacts');
     const data = await response.json();
-    return data.slice(0, 50);
+    const contacts = data.results || data;
+    return contacts.slice(0, 50);
   },
 
   async getContact(id: string): Promise<Contact> {
