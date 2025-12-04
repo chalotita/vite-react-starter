@@ -45,7 +45,8 @@ export const api = {
   async getContactDeals(contactId: string): Promise<Deal[]> {
     const response = await fetch(`${SERVER_URL}/api/contacts/${contactId}/deals`);
     if (!response.ok) throw new Error('Failed to fetch contact deals');
-    return response.json();
+    const data = await response.json();
+    return data.results || data;
   },
 
   async createDeal(payload: CreateDealPayload): Promise<Deal> {
