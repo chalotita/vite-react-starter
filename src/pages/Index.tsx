@@ -5,10 +5,15 @@ import { api } from '@/services/api';
 import { ContactsTable } from '@/components/ContactsTable';
 import { ContactDetail } from '@/components/ContactDetail';
 import { EditContactDialog } from '@/components/EditContactDialog';
+import { AddContactDialog } from '@/components/AddContactDialog';
+import { AddDealDialog } from '@/components/AddDealDialog';
 import { EditDealDialog } from '@/components/EditDealDialog';
 import { DeleteConfirmDialog } from '@/components/DeleteConfirmDialog';
 import { useToast } from '@/hooks/use-toast';
-import { Briefcase } from 'lucide-react';
+import { Briefcase, Contact as ContactIcon } from 'lucide-react';
+import React from 'react';
+import { Select } from '@radix-ui/react-select';
+import { DialogProps } from 'vaul';
 
 const Index = () => {
   const { toast } = useToast();
@@ -19,10 +24,12 @@ const Index = () => {
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null);
 
   // Dialog state
-  const [editingContact, setEditingContact] = useState<Contact | null>(null);
-  const [editingDeal, setEditingDeal] = useState<Deal | null>(null);
-  const [deletingContact, setDeletingContact] = useState<Contact | null>(null);
-  const [deletingDeal, setDeletingDeal] = useState<Deal | null>(null);
+  //const [editingContact, setEditingContact] = useState<Contact | null>(null);
+  const [addingContact, setAddingContact] = useState<Contact | null>(null);
+  const [addingDeal, setAddingDeal] = useState<Contact | null>(null);
+  //const [editingDeal, setEditingDeal] = useState<Deal | null>(null);
+  //const [deletingContact, setDeletingContact] = useState<Contact | null>(null);
+  //const [deletingDeal, setDeletingDeal] = useState<Deal | null>(null);
 
   // Fetch contacts
   const { data: contacts = [], isLoading: contactsLoading } = useQuery({
@@ -38,7 +45,7 @@ const Index = () => {
   });
 
   // Mutations
-  const updateContactMutation = useMutation({
+  /* const updateContactMutation = useMutation({
     mutationFn: ({ id, properties }: { id: string; properties: Contact['properties'] }) =>
       api.updateContact(id, properties),
     onSuccess: () => {
@@ -50,7 +57,34 @@ const Index = () => {
       toast({ title: 'Failed to update contact', variant: 'destructive' });
     },
   });
+ */
+  const addContactMutation = useMutation({
+    mutationFn: ({ properties }: { properties: Contact['properties'] }) =>
+      api.addContact(properties),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['contacts'] });
+      setAddingContact(null);
+      toast({ title: 'Contact Added successfully' });
+    },
+    onError: () => {
+      toast({ title: 'Failed to update contact', variant: 'destructive' });
+    },
+  });
 
+  const addDealMutation = useMutation({
+    mutationFn: ({ contact, properties }: { contact: Contact; properties: Deal['properties'] }) =>
+      api.addDeal(contact.id, properties),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['deals'] });
+      setAddingDeal(null);
+      toast({ title: 'Deal Added successfully' });
+    },
+    onError: () => {
+      toast({ title: 'Failed to add deal', variant: 'destructive' });
+    },
+  });
+
+  /*
   const deleteContactMutation = useMutation({
     mutationFn: (id: string) => api.deleteContact(id),
     onSuccess: () => {
@@ -65,8 +99,9 @@ const Index = () => {
       toast({ title: 'Failed to delete contact', variant: 'destructive' });
     },
   });
+  */
 
-  const updateDealMutation = useMutation({
+  /* const updateDealMutation = useMutation({
     mutationFn: ({ id, properties }: { id: string; properties: Deal['properties'] }) =>
       api.updateDeal(id, properties),
     onSuccess: () => {
@@ -80,9 +115,9 @@ const Index = () => {
     onError: () => {
       toast({ title: 'Failed to update deal', variant: 'destructive' });
     },
-  });
+  }); */
 
-  const deleteDealMutation = useMutation({
+  /* const deleteDealMutation = useMutation({
     mutationFn: (id: string) => api.deleteDeal(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contactDeals', selectedContact?.id] });
@@ -95,7 +130,7 @@ const Index = () => {
     onError: () => {
       toast({ title: 'Failed to delete deal', variant: 'destructive' });
     },
-  });
+  }); */
 
   const handleSelectContact = (contact: Contact) => {
     setSelectedContact(contact);
@@ -111,6 +146,13 @@ const Index = () => {
             <Briefcase className="h-5 w-5 text-primary-foreground" />
           </div>
           <h1 className="text-xl font-bold text-foreground">CRM Dashboard</h1>
+          <button
+            className="ml-auto flex items-center gap-2 rounded-lg bg-primary px-3 py-2 text-primary-foreground hover:bg-primary/80 transition"
+            onClick={() => setAddingContact({} as Contact)}
+          >
+            <span>Add Contact</span>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+          </button>
         </div>
       </header>
 
@@ -128,12 +170,11 @@ const Index = () => {
                 contacts={contacts}
                 selectedContactId={selectedContact?.id || null}
                 onSelectContact={handleSelectContact}
-                onEditContact={setEditingContact}
-                onDeleteContact={setDeletingContact}
+                //onEditContact={setEditingContact}
+                //onDeleteContact={setDeletingContact}
               />
             )}
           </div>
-
           {/* Contact Detail Panel */}
           <div>
             {selectedContact ? (
@@ -143,8 +184,9 @@ const Index = () => {
                 dealsLoading={dealsLoading}
                 selectedDeal={selectedDeal}
                 onSelectDeal={setSelectedDeal}
-                onEditDeal={setEditingDeal}
-                onDeleteDeal={setDeletingDeal}
+                setAddingDeal={setAddingDeal} // <-- Add this line
+                //onEditDeal={setEditingDeal}
+                //onDeleteDeal={setDeletingDeal}
                 onClose={() => {
                   setSelectedContact(null);
                   setSelectedDeal(null);
@@ -160,14 +202,31 @@ const Index = () => {
       </main>
 
       {/* Dialogs */}
-      <EditContactDialog
+      {/* <EditContactDialog
         contact={editingContact}
         open={!!editingContact}
         onOpenChange={(open) => !open && setEditingContact(null)}
         onSave={(id, properties) => updateContactMutation.mutate({ id, properties })}
         isLoading={updateContactMutation.isPending}
+      /> */}
+
+      <AddContactDialog
+        open={!!addingContact}
+        onOpenChange={(open) => !open && setAddingContact(null)}
+        onSave={(properties) => addContactMutation.mutate({ properties })}
+        isLoading={addContactMutation.isPending}
       />
 
+      <AddDealDialog
+        open={!!addingDeal}
+        contact={selectedContact}
+        onOpenChange={(open) => !open && setAddingDeal(null)}
+        onSave={(id: string, properties) => addDealMutation.mutate({ contact: selectedContact!, properties})}
+        isLoading={addDealMutation.isPending}
+      />
+
+      
+      {/*
       <EditDealDialog
         deal={editingDeal}
         open={!!editingDeal}
@@ -192,7 +251,7 @@ const Index = () => {
         title="Delete Deal"
         description="Are you sure you want to delete this deal? This action cannot be undone."
         isLoading={deleteDealMutation.isPending}
-      />
+      /> */}
     </div>
   );
 };

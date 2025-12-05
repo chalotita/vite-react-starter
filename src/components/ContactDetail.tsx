@@ -11,8 +11,9 @@ interface ContactDetailProps {
   dealsLoading: boolean;
   selectedDeal: Deal | null;
   onSelectDeal: (deal: Deal | null) => void;
-  onEditDeal: (deal: Deal) => void;
-  onDeleteDeal: (deal: Deal) => void;
+  setAddingDeal: (contact: Contact | null) => void;
+  //onEditDeal: (deal: Deal) => void;
+  //onDeleteDeal: (deal: Deal) => void;
   onClose: () => void;
 }
 
@@ -35,18 +36,22 @@ export function ContactDetail({
   dealsLoading,
   selectedDeal,
   onSelectDeal,
-  onEditDeal,
-  onDeleteDeal,
+  //onEditDeal,
+  //onDeleteDeal,
   onClose,
+  setAddingDeal,
 }: ContactDetailProps) {
   return (
     <div className="space-y-4">
+      
       <Card>
+        
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="flex items-center gap-2 text-lg">
             <User className="h-5 w-5 text-primary" />
             {contact.properties.firstname} {contact.properties.lastname}
           </CardTitle>
+          
           <Button variant="ghost" size="icon" onClick={onClose}>
             <X className="h-4 w-4" />
           </Button>
@@ -64,6 +69,13 @@ export function ContactDetail({
             <MapPin className="h-4 w-4 text-muted-foreground" />
             <span>{contact.properties.address}</span>
           </div>
+          <button
+                  className="ml-auto flex items-center gap-2 rounded-lg bg-primary px-3 py-2 text-primary-foreground hover:bg-primary/80 transition"
+                  onClick={() => setAddingDeal(contact)}
+                >
+                  <span>Add Deal</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+            </button>
         </CardContent>
       </Card>
 
@@ -86,7 +98,7 @@ export function ContactDetail({
                   <TableHead>Deal Name</TableHead>
                   <TableHead>Amount</TableHead>
                   <TableHead>Stage</TableHead>
-                  <TableHead className="w-[100px]">Actions</TableHead>
+                  {/* <TableHead className="w-[100px]">Actions</TableHead> */}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -105,7 +117,7 @@ export function ContactDetail({
                         {DEAL_STAGE_LABELS[deal.properties.dealstage] || deal.properties.dealstage}
                       </Badge>
                     </TableCell>
-                    <TableCell>
+                    {/* <TableCell>
                       <div className="flex gap-1">
                         <Button
                           variant="ghost"
@@ -130,7 +142,7 @@ export function ContactDetail({
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
-                    </TableCell>
+                    </TableCell> */}
                   </TableRow>
                 ))}
               </TableBody>

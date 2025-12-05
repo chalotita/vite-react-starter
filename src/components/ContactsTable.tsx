@@ -1,31 +1,30 @@
 import { Contact } from '@/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Pencil, Trash2, Users } from 'lucide-react';
+import { Pencil, Plus, Trash2, Users } from 'lucide-react';
 
 interface ContactsTableProps {
   contacts: Contact[];
   selectedContactId: string | null;
   onSelectContact: (contact: Contact) => void;
-  onEditContact: (contact: Contact) => void;
-  onDeleteContact: (contact: Contact) => void;
+  //onEditContact: (contact: Contact) => void;
+  //onDeleteContact: (contact: Contact) => void;
 }
 
 export function ContactsTable({
   contacts,
   selectedContactId,
   onSelectContact,
-  onEditContact,
-  onDeleteContact,
+  //onEditContact,
+  //onDeleteContact,
 }: ContactsTableProps) {
+
   return (
     <div className="rounded-lg border border-border bg-card">
       <div className="flex items-center gap-2 border-b border-border px-4 py-3">
         <Users className="h-5 w-5 text-primary" />
         <h2 className="font-semibold text-card-foreground">Contacts</h2>
-        <span className="ml-auto text-sm text-muted-foreground">
-          {contacts.length} contacts
-        </span>
+        <span className="ml-auto text-sm text-muted-foreground">{contacts.length} contacts</span>
       </div>
       <Table>
         <TableHeader>
@@ -33,7 +32,7 @@ export function ContactsTable({
             <TableHead>Name</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Phone</TableHead>
-            <TableHead className="w-[100px]">Actions</TableHead>
+            {/* <TableHead className="w-[100px]">Actions</TableHead> */}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -63,7 +62,7 @@ export function ContactsTable({
                 <TableCell className="text-muted-foreground">
                   {contact.properties.phone}
                 </TableCell>
-                <TableCell>
+                {/* <TableCell>
                   <div className="flex gap-1">
                     <Button
                       variant="ghost"
@@ -88,7 +87,7 @@ export function ContactsTable({
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
-                </TableCell>
+                </TableCell> */}
               </TableRow>
             ))
           )}

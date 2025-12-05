@@ -18,13 +18,36 @@ export const api = {
     return response.json();
   },
 
-  async updateContact(id: string, properties: Contact['properties']): Promise<Contact> {
+  /* async updateContact(id: string, properties: Contact['properties']): Promise<Contact> {
     const response = await fetch(`${SERVER_URL}/api/contacts/${id}`, {
-      method: 'PUT',
+      method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ properties }),
     });
     if (!response.ok) throw new Error('Failed to update contact');
+    return response.json();
+  }, */
+
+  async addContact(properties: Contact['properties']): Promise<Contact> {
+    const response = await fetch(`${SERVER_URL}/api/contacts`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ properties }),
+    });
+    if (!response.ok) throw new Error('Failed to add contact');
+    return response.json();
+  },
+
+  async addDeal(id: string, properties: Deal['properties']): Promise<Deal> {
+    const response = await fetch(`${SERVER_URL}/api/deals`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        "contactId": id,
+        "dealProperties": properties 
+      }),
+    });
+    if (!response.ok) throw new Error('Failed to add deal');
     return response.json();
   },
 
@@ -49,7 +72,7 @@ export const api = {
     return data.results || data;
   },
 
-  async createDeal(payload: CreateDealPayload): Promise<Deal> {
+  /* async createDeal(payload: CreateDealPayload): Promise<Deal> {
     const response = await fetch(`${SERVER_URL}/api/deals`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -74,5 +97,5 @@ export const api = {
       method: 'DELETE',
     });
     if (!response.ok) throw new Error('Failed to delete deal');
-  },
+  }, */
 };
