@@ -1,0 +1,4 @@
+project_id = "dzscmlvfropmszahueiv"
+
+[functions.deal-chat]
+verify_jwt = false

@@ -9,6 +9,7 @@ import { AddContactDialog } from '@/components/AddContactDialog';
 import { AddDealDialog } from '@/components/AddDealDialog';
 import { EditDealDialog } from '@/components/EditDealDialog';
 import { DeleteConfirmDialog } from '@/components/DeleteConfirmDialog';
+import { DealChatPanel } from '@/components/DealChatPanel';
 import { useToast } from '@/hooks/use-toast';
 import { Briefcase, Contact as ContactIcon } from 'lucide-react';
 import React from 'react';
@@ -158,46 +159,58 @@ const Index = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-6">
-        <div className="flex flex-col gap-6">
-          {/* Contacts Table */}
-          <div>
-            {contactsLoading ? (
-              <div className="flex h-64 items-center justify-center rounded-lg border border-border bg-card shadow-sm">
-                <p className="text-muted-foreground">Loading contacts...</p>
-              </div>
-            ) : (
-              <ContactsTable
-                contacts={contacts}
-                selectedContactId={selectedContact?.id || null}
-                onSelectContact={handleSelectContact}
-                //onEditContact={setEditingContact}
-                //onDeleteContact={setDeletingContact}
-              />
-            )}
+        <div className="flex gap-6">
+          {/* Left side - Contacts and Details */}
+          <div className={`flex flex-col gap-6 ${selectedDeal ? 'flex-1' : 'w-full'}`}>
+            {/* Contacts Table */}
+            <div>
+              {contactsLoading ? (
+                <div className="flex h-64 items-center justify-center rounded-lg border border-border bg-card shadow-sm">
+                  <p className="text-muted-foreground">Loading contacts...</p>
+                </div>
+              ) : (
+                <ContactsTable
+                  contacts={contacts}
+                  selectedContactId={selectedContact?.id || null}
+                  onSelectContact={handleSelectContact}
+                />
+              )}
+            </div>
+            {/* Contact Detail Panel */}
+            <div>
+              {selectedContact ? (
+                <ContactDetail
+                  contact={selectedContact}
+                  deals={contactDeals}
+                  dealsLoading={dealsLoading}
+                  selectedDeal={selectedDeal}
+                  onSelectDeal={setSelectedDeal}
+                  setAddingDeal={setAddingDeal}
+                  onClose={() => {
+                    setSelectedContact(null);
+                    setSelectedDeal(null);
+                  }}
+                />
+              ) : (
+                <div className="flex h-32 items-center justify-center rounded-lg border border-border bg-card shadow-sm">
+                  <p className="text-muted-foreground">Select a contact to view details</p>
+                </div>
+              )}
+            </div>
           </div>
-          {/* Contact Detail Panel */}
-          <div>
-            {selectedContact ? (
-              <ContactDetail
-                contact={selectedContact}
-                deals={contactDeals}
-                dealsLoading={dealsLoading}
-                selectedDeal={selectedDeal}
-                onSelectDeal={setSelectedDeal}
-                setAddingDeal={setAddingDeal} // <-- Add this line
-                //onEditDeal={setEditingDeal}
-                //onDeleteDeal={setDeletingDeal}
-                onClose={() => {
-                  setSelectedContact(null);
-                  setSelectedDeal(null);
-                }}
-              />
-            ) : (
-              <div className="flex h-32 items-center justify-center rounded-lg border border-border bg-card shadow-sm">
-                <p className="text-muted-foreground">Select a contact to view details</p>
+
+          {/* Right side - Chat Panel (shown when deal is selected) */}
+          {selectedDeal && selectedContact && (
+            <div className="w-96 shrink-0">
+              <div className="sticky top-6 h-[calc(100vh-8rem)]">
+                <DealChatPanel
+                  deal={selectedDeal}
+                  contact={selectedContact}
+                  onClose={() => setSelectedDeal(null)}
+                />
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </main>
 
