@@ -1,23 +1,21 @@
 import { Contact } from '@/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Pencil, Plus, Trash2, Users } from 'lucide-react';
+import { Users } from 'lucide-react';
+import { usePagination } from '@/hooks/usePagination';
+import { PaginationControls } from '@/components/PaginationControls';
 
 interface ContactsTableProps {
   contacts: Contact[];
   selectedContactId: string | null;
   onSelectContact: (contact: Contact) => void;
-  //onEditContact: (contact: Contact) => void;
-  //onDeleteContact: (contact: Contact) => void;
 }
 
 export function ContactsTable({
   contacts,
   selectedContactId,
   onSelectContact,
-  //onEditContact,
-  //onDeleteContact,
 }: ContactsTableProps) {
+  const pagination = usePagination(contacts, { defaultPageSize: 25 });
 
   return (
     <div className="rounded-lg border border-border bg-card">
@@ -32,18 +30,17 @@ export function ContactsTable({
             <TableHead>Name</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Phone</TableHead>
-            {/* <TableHead className="w-[100px]">Actions</TableHead> */}
           </TableRow>
         </TableHeader>
         <TableBody>
-          {contacts.length === 0 ? (
+          {pagination.paginatedData.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
+              <TableCell colSpan={3} className="text-center text-muted-foreground py-8">
                 No contacts found
               </TableCell>
             </TableRow>
           ) : (
-            contacts.map((contact) => (
+            pagination.paginatedData.map((contact) => (
               <TableRow
                 key={contact.id}
                 className={`cursor-pointer transition-colors ${
@@ -62,37 +59,21 @@ export function ContactsTable({
                 <TableCell className="text-muted-foreground">
                   {contact.properties.phone}
                 </TableCell>
-                {/* <TableCell>
-                  <div className="flex gap-1">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onEditContact(contact);
-                      }}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-destructive hover:text-destructive"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onDeleteContact(contact);
-                      }}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </TableCell> */}
               </TableRow>
             ))
           )}
         </TableBody>
       </Table>
+      <PaginationControls
+        currentPage={pagination.currentPage}
+        totalPages={pagination.totalPages}
+        totalItems={pagination.totalItems}
+        pageSize={pagination.pageSize}
+        hasNextPage={pagination.hasNextPage}
+        hasPrevPage={pagination.hasPrevPage}
+        onPageChange={pagination.goToPage}
+        onPageSizeChange={pagination.setPageSize}
+      />
     </div>
   );
 }

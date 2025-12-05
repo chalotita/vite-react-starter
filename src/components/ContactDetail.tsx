@@ -3,7 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Mail, Phone, MapPin, User, Pencil, Trash2, DollarSign, X } from 'lucide-react';
+import { Mail, Phone, MapPin, User, DollarSign, X } from 'lucide-react';
+import { usePagination } from '@/hooks/usePagination';
+import { PaginationControls } from '@/components/PaginationControls';
 
 interface ContactDetailProps {
   contact: Contact;
@@ -36,11 +38,11 @@ export function ContactDetail({
   dealsLoading,
   selectedDeal,
   onSelectDeal,
-  //onEditDeal,
-  //onDeleteDeal,
   onClose,
   setAddingDeal,
 }: ContactDetailProps) {
+  const dealsPagination = usePagination(deals, { defaultPageSize: 25 });
+
   return (
     <div className="space-y-4">
       
@@ -92,61 +94,46 @@ export function ContactDetail({
           ) : deals.length === 0 ? (
             <div className="py-8 text-center text-muted-foreground">No deals found</div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Deal Name</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Stage</TableHead>
-                  {/* <TableHead className="w-[100px]">Actions</TableHead> */}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {deals.map((deal) => (
-                  <TableRow
-                    key={deal.id}
-                    className={`cursor-pointer transition-colors ${
-                      selectedDeal?.id === deal.id ? 'bg-accent' : 'hover:bg-muted/50'
-                    }`}
-                    onClick={() => onSelectDeal(deal)}
-                  >
-                    <TableCell className="font-medium">{deal.properties.dealname}</TableCell>
-                    <TableCell>${deal.properties.amount}</TableCell>
-                    <TableCell>
-                      <Badge variant={getDealStageBadgeVariant(deal.properties.dealstage)}>
-                        {DEAL_STAGE_LABELS[deal.properties.dealstage] || deal.properties.dealstage}
-                      </Badge>
-                    </TableCell>
-                    {/* <TableCell>
-                      <div className="flex gap-1">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onEditDeal(deal);
-                          }}
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-destructive hover:text-destructive"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onDeleteDeal(deal);
-                          }}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell> */}
+            <>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Deal Name</TableHead>
+                    <TableHead>Amount</TableHead>
+                    <TableHead>Stage</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {dealsPagination.paginatedData.map((deal) => (
+                    <TableRow
+                      key={deal.id}
+                      className={`cursor-pointer transition-colors ${
+                        selectedDeal?.id === deal.id ? 'bg-accent' : 'hover:bg-muted/50'
+                      }`}
+                      onClick={() => onSelectDeal(deal)}
+                    >
+                      <TableCell className="font-medium">{deal.properties.dealname}</TableCell>
+                      <TableCell>${deal.properties.amount}</TableCell>
+                      <TableCell>
+                        <Badge variant={getDealStageBadgeVariant(deal.properties.dealstage)}>
+                          {DEAL_STAGE_LABELS[deal.properties.dealstage] || deal.properties.dealstage}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <PaginationControls
+                currentPage={dealsPagination.currentPage}
+                totalPages={dealsPagination.totalPages}
+                totalItems={dealsPagination.totalItems}
+                pageSize={dealsPagination.pageSize}
+                hasNextPage={dealsPagination.hasNextPage}
+                hasPrevPage={dealsPagination.hasPrevPage}
+                onPageChange={dealsPagination.goToPage}
+                onPageSizeChange={dealsPagination.setPageSize}
+              />
+            </>
           )}
         </CardContent>
       </Card>
